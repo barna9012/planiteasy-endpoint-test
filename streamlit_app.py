@@ -14,7 +14,7 @@ ENDPOINTS = {
 # Define available models
 MODELS = {
     "Claude 3.5 Sonnet v2": None,  # Default model doesn't need a model_id
-    "LLama 3.0 70b": "us.meta.llama3-3-70b-instruct-v1:0"
+    "LLama 3.3 70b Instruct": "us.meta.llama3-3-70b-instruct-v1:0"
 }
 
 def call_api(endpoint, data, api_key):
