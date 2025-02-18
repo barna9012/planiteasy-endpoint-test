@@ -11,6 +11,12 @@ ENDPOINTS = {
     "Generate Free Format Content": "/generate-free-format-content"
 }
 
+# Define available models
+MODELS = {
+    "Claude 3.5 Sonnet v2": None,  # Default model doesn't need a model_id
+    "LLama 3.0 70b": "us.meta.llama3-3-70b-instruct-v1:0"
+}
+
 def call_api(endpoint, data, api_key):
     base_url = "https://m0zpgns4ce.execute-api.us-east-1.amazonaws.com/stg-public"
     api_url = f"{base_url}{endpoint}"
@@ -35,6 +41,13 @@ st.title("Travel Content Generator")
 
 # Input for API key
 api_key = st.text_input("Enter your API key:", type="password")
+
+# Model selection
+selected_model = st.selectbox(
+    "Select Model",
+    list(MODELS.keys()),
+    index=0  # Default to first option (Claude)
+)
 
 # Endpoint selection
 selected_endpoint = st.selectbox(
@@ -98,6 +111,7 @@ if st.button("Generate Content"):
     else:
         with st.spinner('Generating content...'):
             # Prepare the data payload
+            # Prepare the data payload
             if selected_endpoint == "Generate Free Format Content":
                 data = {"prompt": prompt}
                 # Add optional destination and dates if provided
@@ -113,6 +127,10 @@ if st.button("Generate Content"):
                     "trip_start_date": trip_start_date.strftime('%Y-%m-%d'),
                     "trip_end_date": trip_end_date.strftime('%Y-%m-%d'),
                 }
+
+            # Add model_id if LLama is selected
+            if MODELS[selected_model]:  # If model_id is not None
+                data["model_id"] = MODELS[selected_model]
 
             # Add optional fields
             if client_age > 0:
@@ -165,6 +183,10 @@ if st.session_state.content_generated:
                     "user_feedback": feedback
                 })
 
+                # Add model_id if LLama is selected
+                if MODELS[selected_model]:
+                    data["model_id"] = MODELS[selected_model]
+
                 # Call API with feedback
                 response = call_api(ENDPOINTS[selected_endpoint], data, api_key)
 
@@ -189,4 +211,6 @@ st.markdown("""
 - All dates should be in YYYY-MM-DD format
 - Places visited should be comma-separated
 - Optional fields can be left at 0 or empty if not applicable
+- Claude 3.5 Sonnet v2 is the default model
+- LLama 3.0 70b is available as an alternative model
 """)
