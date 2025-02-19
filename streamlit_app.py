@@ -111,9 +111,12 @@ if st.button("Generate Content"):
     else:
         with st.spinner('Generating content...'):
             # Prepare the data payload
-            # Prepare the data payload
             if selected_endpoint == "Generate Free Format Content":
-                data = {"prompt": prompt}
+                data = {
+                    "prompt": prompt,
+                    "user_id": "streamlit",  # Add these two parameters
+                    "user_type": "normal"
+                }
                 # Add optional destination and dates if provided
                 if destination_name:
                     data["destination_name"] = destination_name
@@ -126,6 +129,8 @@ if st.button("Generate Content"):
                     "destination_name": destination_name,
                     "trip_start_date": trip_start_date.strftime('%Y-%m-%d'),
                     "trip_end_date": trip_end_date.strftime('%Y-%m-%d'),
+                    "user_id": "streamlit",  # Add these two parameters
+                    "user_type": "normal"
                 }
 
             # Add model_id if LLama is selected
@@ -169,6 +174,7 @@ if st.session_state.content_generated:
     st.subheader("Feedback Section")
     feedback = st.text_area("Please provide your feedback for improving the content:", height=100)
     
+    # In the feedback section, when regenerating content:
     if st.button("Regenerate with Feedback"):
         if not feedback:
             st.warning("Please provide feedback before regenerating.")
@@ -177,10 +183,12 @@ if st.session_state.content_generated:
                 # Get the original data from session state
                 data = st.session_state.form_values.copy()
                 
-                # Add feedback-related fields
+                # Add feedback-related fields and user parameters
                 data.update({
                     "generated_content": st.session_state.generated_content,
-                    "user_feedback": feedback
+                    "user_feedback": feedback,
+                    "user_id": "streamlit",  # Add these two parameters
+                    "user_type": "normal"
                 })
 
                 # Add model_id if LLama is selected
